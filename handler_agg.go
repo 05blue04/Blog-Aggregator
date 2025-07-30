@@ -51,3 +51,24 @@ func handlerAddFeed(s *state, cmd command) error {
 
 	return nil
 }
+
+func handlerFeeds(s *state, cmd command) error {
+	if len(cmd.args) > 0 {
+		return fmt.Errorf("usage: %s *(no arguments expected)", cmd.name)
+	}
+	feeds, err := s.db.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+
+	for i, feed := range feeds {
+		userName, err := s.db.GetUserbyID(context.Background(), feed.UserID)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("feed %d\nName:%s\nURL:%s\nUserId:%s\n", i, feed.Name, feed.Url, userName)
+
+	}
+
+	return nil
+}
