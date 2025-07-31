@@ -18,7 +18,7 @@ Make sure you have the following installed:
 Install the CLI tool using `go install`:
 
 ```bash
-go install github.com/05blue04/Blog-Aggregator@latest
+go install github.com/05blue04/Blog-Aggregator/cmd/gator@latest
 ```
 ## 🛠️ Database Setup (Linux)
 
@@ -45,18 +45,21 @@ db_url — PostgreSQL connection string
 current_user_name — your active gator user
 
 ## CLI Usage
-| Command                     | Description                                  |
-| --------------------------- | -------------------------------------------- |
-| `gator reset`               | Resets the database (⚠️ deletes all data)    |
-| `gator register "username"` | Registers a new user and sets them as active |
-| `gator login "username"`    | Switches to an existing user                 |
-| `gator users`               | Lists all registered users                   |
-| `gator addfeed "url"`       | Adds a new RSS feed to your account          |
-| `gator feeds`               | Displays all available feeds                 |
-| `gator follow "url"`        | Follows a feed as the current user           |
-| `gator following`           | Lists all feeds you're following             |
-| `gator unfollow "url"`      | Unfollows a feed                             |
-| `gator browse [limit]`       | Displays recent posts from followed feeds; optionally limit number of posts (default: 2) |
+
+| Command                         | Description                                                                                      |
+|----------------------------------|--------------------------------------------------------------------------------------------------|
+| `gator reset`                   | Resets the database (⚠️ deletes all data)                                                        |
+| `gator register "username"`     | Registers a new user and sets them as active                                                     |
+| `gator login "username"`        | Switches to an existing user                                                                     |
+| `gator users`                   | Lists all registered users                                                                       |
+| `gator addfeed "url"`           | Adds a new RSS feed to your account                                                              |
+| `gator feeds`                   | Displays all available feeds                                                                     |
+| `gator follow "url"`            | Follows a feed as the current user                                                               |
+| `gator following`               | Lists all feeds you're following                                                                 |
+| `gator unfollow "url"`          | Unfollows a feed                                                                                 |
+| `gator browse [limit]`          | Displays recent posts from followed feeds; optionally limit number of posts (default: 2)        |
+| `gator agg <time_between_reqs>` | Continuously fetches and prints posts from feeds; time between requests is a duration (e.g. 10s, 1m) |
+
 
 ## Example
 ```bash
