@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/05blue04/Blog-Aggregator/internal/database"
+	"github.com/google/uuid"
 )
 
 func handlerAgg(s *state, cmd command) error {
@@ -58,6 +60,42 @@ func scrapeFeeds(s *state) {
 		return
 	}
 
-	printRSS(rss)
+	err = saveRSS(s, rss, feed.ID)
+	if err != nil {
+		log.Printf("Couldn't save a post to db :%v\n", err)
+	}
+	// printRSS(rss) uncomment to view posts being aggregated
 
+}
+
+func saveRSS(s *state, r *RSSFeed, feedId uuid.UUID) error {
+	fmt.Printf("Title: %s\nLink: %s\nDescription: %s\n", r.Channel.Title, r.Channel.Link, r.Channel.Description)
+
+	for _, item := range r.Channel.Item {
+		postParams := database.CreatePostParams{
+			ID:        uuid.New(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			Title:     item.Title,
+			Url:       item.Link,
+			Description: sql.NullString{
+				String: item.Description,
+				Valid:  true,
+			},
+			PublishedAt: sql.NullString{
+				String: item.PubDate,
+				Valid:  true,
+			},
+			FeedID: feedId,
+		}
+		_, err := s.db.CreatePost(context.Background(), postParams)
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			log.Printf("Couldn't create post: %v", err)
+			continue
+		}
+	}
+	return nil
 }
