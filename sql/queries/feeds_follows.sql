@@ -13,3 +13,8 @@ INNER JOIN feeds ON feeds.id = inserted_feed_follow.feed_id;
 SELECT feeds.name FROM feeds
 INNER JOIN feeds_follows ON feeds.id = feeds_follows.feed_id
 WHERE feeds_follows.user_id = $1;
+
+
+-- name: DeleteFeedFollow :exec
+DELETE FROM feeds_follows
+WHERE feeds_follows.user_id = $1 AND feeds_follows.feed_id = (SELECT id FROM feeds WHERE url = $2);
