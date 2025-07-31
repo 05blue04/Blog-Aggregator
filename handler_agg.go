@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/05blue04/Blog-Aggregator/internal/database"
@@ -23,20 +24,19 @@ func handlerAgg(s *state, cmd command) error {
 
 	ticker := time.NewTicker(timeBetweenReqs)
 	for ; ; <-ticker.C {
-		err = scrapeFeeds(s)
-		if err != nil {
-			return err
-		}
+		scrapeFeeds(s)
 	}
 
 }
 
-func scrapeFeeds(s *state) error {
+func scrapeFeeds(s *state) {
 	feed, err := s.db.GetNextFeedToFetch(context.Background())
 	if err != nil {
-		return err
+		log.Println("Couldn't get next feeds to fetch", err)
+		return
 	}
 
+	log.Println("Found a feed to fetch!")
 	params := database.MarkFeedFetchedParams{
 		UpdatedAt: time.Now(),
 		LastFetchedAt: sql.NullTime{
@@ -48,15 +48,16 @@ func scrapeFeeds(s *state) error {
 
 	err = s.db.MarkFeedFetched(context.Background(), params)
 	if err != nil {
-		return err
+		log.Printf("Couldn't mark feed %s as fetched :%v", feed.Name, err)
+		return
 	}
 
 	rss, err := fetchFeed(context.Background(), feed.Url)
 	if err != nil {
-		return err
+		log.Printf("Couldn't collect feed %s: %v", feed.Name, err)
+		return
 	}
 
 	printRSS(rss)
 
-	return nil
 }
