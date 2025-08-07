@@ -9,8 +9,8 @@ A command-line blog aggregation tool written in Go that lets users follow RSS fe
 Make sure you have the following installed:
 
 - **Go** `v1.24.5` or higher  
-- **PostgreSQL** `v16.9` or higher  
-
+- **PostgreSQL** `v16.9` or higher
+- **Goose** - a database migration tool
 ---
 
 ## 🚀 Installation
@@ -30,6 +30,11 @@ Inside the psql shell:
 ```bash
 CREATE DATABASE gator;
 ```
+In another terminal
+```bash
+goose -dir ./sql/schema postgres "postgres://postgres:postgres@localhost:5432/gator" up
+```
+This will initialize the database
 
 ## ⚙️ Configuration
 Create a .gatorconfig.json file in your home directory:
